@@ -1,41 +1,15 @@
-import json
 import os
 from datetime import datetime, timezone
 
 import ffmpeg
-import requests
 from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
 
-from config import RESULTS_FOLDER, SCAN_RECORDINGS_FOLDER, NOCMIG_SLACK_WEBHOOK_URL
+from config import RESULTS_FOLDER, SCAN_RECORDINGS_FOLDER
+from send_slack_data import send_bird_audio_file_to_slack
 
 
-def _send_slack_message(message: str):
-    print(f"Sending Slack message {message} to {NOCMIG_SLACK_WEBHOOK_URL}")
-    response = requests.post(
-        NOCMIG_SLACK_WEBHOOK_URL,
-        headers={
-            "Content-Type": "application/json"
-        },
-        data=json.dumps({
-            "text": message
-        }))
-    print(f"Finished sending Slack message, response code {response.status_code}, "
-          f"response text {response.text}")
-
-
-def _format_slack_message_for_detection(detection: dict) -> str:
-    return f"{detection['common_name']}"
-
-
-def _send_notifications(recording: Recording, file_path: str):
-    species_list = str.join("\n\n",
-                            [_format_slack_message_for_detection(detection)
-                             for detection in recording.detections])
-    _send_slack_message(f"🐦🐦🐦 {file_path}:\n\n {species_list}")
-
-
-def _create_audit_segment(input_file, output_file, start_time, end_time):
+def _create_audio_segment(input_file, output_file, start_time, end_time):
     (
         ffmpeg
         .input(input_file, ss=start_time)
@@ -45,7 +19,7 @@ def _create_audit_segment(input_file, output_file, start_time, end_time):
     )
 
 
-def _create_detection_snippets(detections, input_file_path):
+def _create_and_send_detection_snippets(detections, input_file_path):
     original_file_name = os.path.basename(input_file_path)
     original_file_name_without_extension, _ = os.path.splitext(original_file_name)
 
@@ -53,7 +27,12 @@ def _create_detection_snippets(detections, input_file_path):
         start_time = round(detection['start_time'])
         end_time = round(detection['end_time']) + 1
         output_file_name = f"{original_file_name_without_extension}_{detection['common_name'].replace(' ', '')}_{start_time}.mp3"
-        _create_audit_segment(input_file_path, f"{RESULTS_FOLDER}/{output_file_name}", start_time, end_time)
+        full_output_file_path = f"{RESULTS_FOLDER}/{output_file_name}"
+        _create_audio_segment(input_file_path, full_output_file_path, start_time, end_time)
+        send_bird_audio_file_to_slack(
+            detection_data=detection,
+            file_path=full_output_file_path
+        )
 
 
 def _analyse_file(
@@ -69,14 +48,14 @@ def _analyse_file(
     )
     recording.analyze()
     print(f"Got results for {file_path}")
-    _create_detection_snippets(detections=recording.detections, input_file_path=file_path)
-    _send_notifications(recording, os.path.basename(file_path))
+    _create_and_send_detection_snippets(detections=recording.detections, input_file_path=file_path)
     os.remove(file_path)
     return recording.detections
 
 
 def process_recordings_in_scan_folder(folder: str):
-    files_to_analyse = sorted(os.listdir(folder))
+    files_to_analyse = sorted([file_name for file_name in os.listdir(folder)
+                               if file_name.endswith(".mp3")])
     if len(files_to_analyse) == 0:
         print("No files to analyse")
         return

@@ -14,6 +14,7 @@ ffmpeg-python = "0.2.0"
 scipy = "1.12.0"
 sounddevice = "0.4.6"
 requests="2.32.3"
+slack-sdk="3.31.0"
 
 
 #[tool.poetry.group.dev.dependencies]
