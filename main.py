@@ -6,9 +6,7 @@ from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
 from datetime import datetime
 
-OUTPUT_FOLDER = os.environ["BIRDNET_OUTPUT_FOLDER"]
-SNIPPETS_FOLDER = f"{OUTPUT_FOLDER}/snippets"
-RESULTS_FOLDER = f"{OUTPUT_FOLDER}/results"
+from config import RESULTS_FOLDER, SNIPPETS_FOLDER
 
 
 def split_mp3(input_file, output_folder, chunk_duration=10 * 60):
@@ -110,7 +108,6 @@ def analyse_file(file_path: str, analyzer, label_track_file_path: str):
     print(recording.detections)
     _create_detection_snippets(recording.detections, file_path, label_track_file_path)
     os.remove(file_path)
-
 
 
 def analyse(input_filename: str):
