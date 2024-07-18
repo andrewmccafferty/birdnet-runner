@@ -1153,5 +1153,10 @@ wrapt==1.16.0 ; python_version >= "3.10" and python_version < "4.0" \
     --hash=sha256:f8212564d49c50eb4565e502814f694e240c55551a5f1bc841d4fcaabb0a9b8a \
     --hash=sha256:ffa565331890b90056c01db69c0fe634a776f8019c143a5ae265f9c6bc4bd6d4
 
-birdnetlib==0.16.0
-schedule==1.2.2
+birdnetlib==0.16.0 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:9ede5455ed5492a392316bb29f2c40c3738b461af1ab5f421f50d4767abdb21e \
+    --hash=sha256:ed0a70b18065b703149046e23133fce11b5d56feb5be12ebd1cd5de515086f97
+
+schedule==1.2.2 ; python_version >= "3.10" and python_version < "4.0" \
+    --hash=sha256:15fe9c75fe5fd9b9627f3f19cc0ef1420508f9f9a46f45cd0769ef75ede5f0b7 \
+    --hash=sha256:5bef4a2a0183abf44046ae0d164cadcac21b1db011bdd8102e4a0c1e91e06a7d
