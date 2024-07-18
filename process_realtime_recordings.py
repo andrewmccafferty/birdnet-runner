@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime, timezone
 
 import ffmpeg
@@ -10,13 +11,16 @@ from send_slack_data import send_bird_audio_file_to_slack
 
 
 def _create_audio_segment(input_file, output_file, start_time, end_time):
-    (
-        ffmpeg
-        .input(input_file, ss=start_time)
-        .output(output_file, to=end_time, codec='copy',
-                loglevel="quiet")
-        .run(overwrite_output=True)
-    )
+    try:
+        print(f"Writing file {input_file} to {output_file}")
+        (ffmpeg
+         .input(input_file, ss=start_time)
+         .output(output_file, to=end_time, codec='copy', loglevel="quiet")
+         .run(overwrite_output=True))
+    except ffmpeg.Error as e:
+        print('stdout:', e.stdout.decode('utf8'))
+        print('stderr:', e.stderr.decode('utf8'))
+        raise e
 
 
 def _create_and_send_detection_snippets(detections, input_file_path):
@@ -47,15 +51,37 @@ def _analyse_file(
         min_conf=0.60,
     )
     recording.analyze()
-    print(f"Got results for {file_path}")
+    print(f"Got {len(recording.detections)} results for {file_path}")
     _create_and_send_detection_snippets(detections=recording.detections, input_file_path=file_path)
     os.remove(file_path)
     return recording.detections
 
 
+def extract_hour_from_filename(filename):
+    # Define the regular expression pattern to extract the hour
+    pattern = r'final_\d{4}-\d{2}-\d{2}T(\d{2})-\d{2}-\d{2}\.mp3'
+
+    # Search for the pattern in the filename
+    match = re.search(pattern, filename)
+
+    # Check if a match was found
+    if match:
+        # Extract the hour part from the match
+        hour = match.group(1)
+        print(f"Got hour {hour} from filename {filename}")
+        return int(hour)
+    else:
+        return None
+
+
+def filename_is_within_time_constraint(filename: str) -> bool:
+    hour = extract_hour_from_filename(filename)
+    return hour >= 22 or hour < 3
+
+
 def process_recordings_in_scan_folder(folder: str):
     files_to_analyse = sorted([file_name for file_name in os.listdir(folder)
-                               if file_name.endswith(".mp3")])
+                               if file_name.endswith(".mp3") and filename_is_within_time_constraint(file_name)])
     if len(files_to_analyse) == 0:
         print("No files to analyse")
         return
@@ -64,7 +90,3 @@ def process_recordings_in_scan_folder(folder: str):
     for file in files_to_analyse:
         print(f"Analysing {file}")
         _analyse_file(f"{folder}/{file}", analyzer)
-
-
-if __name__ == '__main__':
-    process_recordings_in_scan_folder(SCAN_RECORDINGS_FOLDER)

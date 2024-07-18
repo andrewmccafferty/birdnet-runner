@@ -8,3 +8,4 @@ SLACK_CHANNEL_ID = os.environ["SLACK_CHANNEL_ID"]
 SNIPPETS_FOLDER = f"{OUTPUT_FOLDER}/snippets"
 RESULTS_FOLDER = f"{OUTPUT_FOLDER}/results"
 
+NO_SLACK_SEND = True if os.environ.get("NO_SLACK_SEND") == "1" else False
