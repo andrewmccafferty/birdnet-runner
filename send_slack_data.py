@@ -2,7 +2,11 @@ import os
 
 from slack_sdk import WebClient
 
-from config import SLACK_BOT_TOKEN, SLACK_CHANNEL_ID, NO_SLACK_SEND
+from config import SLACK_BOT_TOKEN, SLACK_CHANNEL_ID, NO_SLACK_SEND, EXCLUDED_SPECIES
+
+
+def _should_send_species_notification(species: str) -> bool:
+    return species not in EXCLUDED_SPECIES
 
 def send_bird_audio_file_to_slack(
         detection_data: dict,
@@ -11,7 +15,11 @@ def send_bird_audio_file_to_slack(
     species = detection_data['common_name']
 
     if NO_SLACK_SEND:
-        print(f"Skipping Slack send of {species}")
+        print(f"Slack notifications off, skipping Slack send of {species}")
+        return
+
+    if not _should_send_species_notification(species):
+        print(f"Skipping Slack send of {species} because it's excluded from notifications")
         return
 
     client.files_upload_v2(

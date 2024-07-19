@@ -56,32 +56,9 @@ def _analyse_file(
     os.remove(file_path)
     return recording.detections
 
-
-def extract_hour_from_filename(filename):
-    # Define the regular expression pattern to extract the hour
-    pattern = r'final_\d{4}-\d{2}-\d{2}T(\d{2})-\d{2}-\d{2}\.mp3'
-
-    # Search for the pattern in the filename
-    match = re.search(pattern, filename)
-
-    # Check if a match was found
-    if match:
-        # Extract the hour part from the match
-        hour = match.group(1)
-        print(f"Got hour {hour} from filename {filename}")
-        return int(hour)
-    else:
-        return None
-
-
-def filename_is_within_time_constraint(filename: str) -> bool:
-    hour = extract_hour_from_filename(filename)
-    return hour >= 22 or hour < 3
-
-
 def process_recordings_in_scan_folder(folder: str):
     files_to_analyse = sorted([file_name for file_name in os.listdir(folder)
-                               if file_name.endswith(".mp3") and filename_is_within_time_constraint(file_name)])
+                               if file_name.endswith(".mp3")])
     if len(files_to_analyse) == 0:
         print("No files to analyse")
         return

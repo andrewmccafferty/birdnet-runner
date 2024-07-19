@@ -9,3 +9,14 @@ SNIPPETS_FOLDER = f"{OUTPUT_FOLDER}/snippets"
 RESULTS_FOLDER = f"{OUTPUT_FOLDER}/results"
 
 NO_SLACK_SEND = True if os.environ.get("NO_SLACK_SEND") == "1" else False
+
+
+def _generate_excluded_species_list() -> list[str]:
+    configured_list_csv = os.environ.get("EXCLUDED_SPECIES")
+    if not configured_list_csv:
+        return []
+
+    return configured_list_csv.split(",")
+
+
+EXCLUDED_SPECIES = _generate_excluded_species_list()
