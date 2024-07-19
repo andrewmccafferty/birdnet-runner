@@ -1,0 +1,5 @@
+Unit]
+Description=Record 30 seconds of sound
+
+[Service]
+ExecStart=/path/to/record_sound.sh
