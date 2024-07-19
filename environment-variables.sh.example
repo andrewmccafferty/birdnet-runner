@@ -1,0 +1,11 @@
+OUTPUT_FOLDER=/path/to/results/folder
+SCAN_RECORDINGS_FOLDER=/path/to/scan/recordings/folder
+SLACK_BOT_TOKEN=MySlackToken
+SLACK_CHANNEL_ID=MySlackChannelId
+
+export LOCAL_IDENTITY_FILE="/path/to/local/identity/file"
+export REMOTE_USER="MyUser"
+export REMOTE_HOST="MyHost"
+export REMOTE_DIRECTORY="/path/to/pi/audio/folder"
+export LOCAL_DIRECTORY="/path/to/local/processing/folder"
+export EXCLUDED_SPECIES="Eurasian Jackdaw,Eurasian Oystercatcher"
