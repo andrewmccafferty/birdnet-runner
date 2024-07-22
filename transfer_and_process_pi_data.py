@@ -25,6 +25,8 @@ def run_process():
     except Exception as exception:
         print(f"Got error {exception}")
 
+
+run_process()
 print("Starting timer to get data from Pi every 30 seconds")
 schedule.every(30).seconds.do(run_process)
 
