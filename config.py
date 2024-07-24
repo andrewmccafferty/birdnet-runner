@@ -9,6 +9,9 @@ SNIPPETS_FOLDER = f"{OUTPUT_FOLDER}/snippets"
 RESULTS_FOLDER = f"{OUTPUT_FOLDER}/results"
 
 NO_SLACK_SEND = True if os.environ.get("NO_SLACK_SEND") == "1" else False
+SIGHTINGS_DB_NAME = os.environ["SIGHTINGS_DB_NAME"]
+SIGHTINGS_DB_USER = os.environ["SIGHTINGS_DB_USER"]
+SIGHTINGS_DB_PASSWORD = os.environ["SIGHTINGS_DB_PASSWORD"]
 
 
 def _generate_excluded_species_list() -> list[str]:
