@@ -7,7 +7,9 @@ from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
 
 from config import RESULTS_FOLDER, SCAN_RECORDINGS_FOLDER
-from send_slack_data import send_bird_audio_file_to_slack
+from models import BirdObservation
+from observation_storage import store_observation, get_species_counts
+from send_slack_data import send_bird_audio_file_to_slack, send_species_aggregate_report_to_slack
 
 
 def _create_audio_segment(input_file, output_file, start_time, end_time):
@@ -22,6 +24,17 @@ def _create_audio_segment(input_file, output_file, start_time, end_time):
         print('stderr:', e.stderr.decode('utf8'))
         raise e
 
+def extract_date_from_filename(file_path):
+    # Define the regex pattern to match the ISO timestamp in the file name
+    pattern = r'(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2})'
+
+    # Search for the pattern in the file path
+    match = re.search(pattern, file_path)
+
+    # If a match is found, return the timestamp with colons instead of hyphens for time parts
+    assert match is not None, f"Could not get date from file path {file_path}"
+    return datetime.fromisoformat(match.group(1).replace('-', ':', 2))
+
 
 def _create_and_send_detection_snippets(detections, input_file_path):
     original_file_name = os.path.basename(input_file_path)
@@ -33,10 +46,27 @@ def _create_and_send_detection_snippets(detections, input_file_path):
         output_file_name = f"{original_file_name_without_extension}_{detection['common_name'].replace(' ', '')}_{start_time}.mp3"
         full_output_file_path = f"{RESULTS_FOLDER}/{output_file_name}"
         _create_audio_segment(input_file_path, full_output_file_path, start_time, end_time)
+        detection_date = extract_date_from_filename(full_output_file_path)
         send_bird_audio_file_to_slack(
             detection_data=detection,
-            file_path=full_output_file_path
+            file_path=full_output_file_path,
+            detection_time=detection_date
         )
+
+        store_observation(
+            BirdObservation(
+                common_species_name=detection['common_name'],
+                scientific_name=detection['scientific_name'],
+                time=detection_date,
+                recording_filename=full_output_file_path,
+                confidence=str(detection['confidence'])
+            )
+        )
+
+    if len(detections) > 0:
+        counts = get_species_counts()
+        if len(counts) > 0:
+            send_species_aggregate_report_to_slack(counts)
 
 
 def _analyse_file(

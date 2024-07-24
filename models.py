@@ -1,4 +1,6 @@
 import datetime
+import decimal
+from decimal import Decimal
 from typing import Optional
 
 from pydantic import BaseModel
@@ -10,3 +12,10 @@ class BirdObservation(BaseModel):
     scientific_name: str
     time: datetime.datetime
     recording_filename: str
+    confidence: Decimal
+
+
+class SightingReport(BaseModel):
+    species_name: str
+    last_hearing: datetime.datetime
+    today_count: int
