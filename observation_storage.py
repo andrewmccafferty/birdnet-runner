@@ -75,17 +75,42 @@ def get_species_counts() -> list[SightingReport]:
     conn = get_db_connection()
     try:
         cur = conn.cursor()
-        cur.execute("SELECT s.common_species_name, "
-                              "max(sg.time) as last_hearing, "
-                              "count(s.common_species_name) as today_count "
-                              "FROM sighting sg JOIN species s ON s.id = sg.species_id "
-                              "WHERE time > now()::date "
-                              "GROUP BY s.common_species_name ORDER by s.common_species_name")
+        query = """
+        WITH LastSighting AS (
+            SELECT 
+                s.common_species_name, 
+                max(sg.time) as last_hearing
+            FROM 
+                sighting sg 
+            JOIN 
+                species s ON s.id = sg.species_id 
+            WHERE 
+                sg.time > now()::date 
+            GROUP BY 
+                s.common_species_name
+        )
+        SELECT 
+            s.common_species_name,
+            ls.last_hearing,
+            sg.recording_filename,
+            count(s.common_species_name) OVER (PARTITION BY s.common_species_name) as today_count
+        FROM 
+            LastSighting ls
+        JOIN 
+            sighting sg ON sg.time = ls.last_hearing
+        JOIN 
+            species s ON s.id = sg.species_id 
+        ORDER BY 
+            s.common_species_name;
+        """
+
+        cur.execute(query)
         results = cur.fetchall()
         reports = [SightingReport(
             species_name=row[0],
             last_hearing=row[1],
-            today_count=row[2]
+            last_hearing_filename=row[2],
+            today_count=row[3]
         ) for row in results]
         return reports
     except Exception as exc:
