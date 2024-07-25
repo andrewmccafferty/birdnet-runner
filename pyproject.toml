@@ -110,3 +110,4 @@ pydantic="2.8.2"
 #"shared/services/email.py" = [
 #    "E722" # Allow catch all so email cusomisation exceptions don't stop emails being sent
 #]
+prettytable = "^3.10.2"

@@ -3,10 +3,9 @@ import os
 import re
 
 from slack_sdk import WebClient
-
+from prettytable import PrettyTable
 from config import SLACK_BOT_TOKEN, SLACK_CHANNEL_ID, NO_SLACK_SEND, EXCLUDED_SPECIES, SPECIES_COUNTS_SLACK_CHANNEL_ID
 from models import SightingReport
-
 
 def _should_send_species_notification(species: str) -> bool:
     return species not in EXCLUDED_SPECIES
@@ -38,13 +37,13 @@ def send_species_aggregate_report_to_slack(reports: list[SightingReport]):
         print(f"Slack notifications off, not sending species report")
         return
     client = WebClient(SLACK_BOT_TOKEN)
-    species_rows = "\n".join([
-        f"{report.species_name}, {report.last_hearing}, {report.today_count}" for report in reports
-    ])
+    table = PrettyTable()
+    table.field_names = ["Species", "Last heard", "Count Today"]
+    table.add_rows([[report.species_name, report.last_hearing, report.today_count] for report in reports])
+
     client.chat_postMessage(
         channel=SPECIES_COUNTS_SLACK_CHANNEL_ID,
-        text="species name, last hearing, count today\n\n"
-        f"{species_rows}"
+        text=f"```{table}```"
     )
 
 if __name__ == '__main__':
@@ -52,11 +51,13 @@ if __name__ == '__main__':
         SightingReport(
             species_name="Blackbird",
             last_hearing=datetime.datetime.utcnow(),
-            today_count=5
+            today_count=5,
+            last_hearing_filename="Blah"
         ),
         SightingReport(
             species_name="Bluethroat (just kidding)",
             last_hearing=datetime.datetime.utcnow(),
-            today_count=5
+            today_count=5,
+            last_hearing_filename="Blah"
         )
     ])

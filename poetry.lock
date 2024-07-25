@@ -1382,6 +1382,23 @@ sftp = ["paramiko (>=2.7.0)"]
 xxhash = ["xxhash (>=1.4.3)"]
 
 [[package]]
+name = "prettytable"
+version = "3.10.2"
+description = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "prettytable-3.10.2-py3-none-any.whl", hash = "sha256:1cbfdeb4bcc73976a778a0fb33cb6d752e75396f16574dcb3e2d6332fd93c76a"},
+    {file = "prettytable-3.10.2.tar.gz", hash = "sha256:29ec6c34260191d42cd4928c28d56adec360ac2b1208a26c7e4f14b90cc8bc84"},
+]
+
+[package.dependencies]
+wcwidth = "*"
+
+[package.extras]
+tests = ["pytest", "pytest-cov", "pytest-lazy-fixtures"]
+
+[[package]]
 name = "protobuf"
 version = "4.25.3"
 description = ""
@@ -2046,17 +2063,6 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.10.0"
-description = "Backported and Experimental Type Hints for Python 3.8+"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "typing_extensions-4.10.0-py3-none-any.whl", hash = "sha256:69b1a937c3a517342112fb4c6df7e72fc39a38e7891a5730ed4985b5214b5475"},
-    {file = "typing_extensions-4.10.0.tar.gz", hash = "sha256:b0abd7c89e8fb96f98db18d86106ff1d90ab692004eb746cf6eda2682f91b3cb"},
-]
-
-[[package]]
-name = "typing-extensions"
 version = "4.12.2"
 description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = false
@@ -2119,6 +2125,17 @@ files = [
 
 [package.extras]
 watchmedo = ["PyYAML (>=3.10)"]
+
+[[package]]
+name = "wcwidth"
+version = "0.2.13"
+description = "Measures the displayed width of unicode strings in a terminal"
+optional = false
+python-versions = "*"
+files = [
+    {file = "wcwidth-0.2.13-py2.py3-none-any.whl", hash = "sha256:3da69048e4540d84af32131829ff948f1e022c1c6bdb8d6102117aac784f6859"},
+    {file = "wcwidth-0.2.13.tar.gz", hash = "sha256:72ea0c06399eb286d978fdedb6923a9eb47e1c486ce63e9b4e64fc18303972b5"},
+]
 
 [[package]]
 name = "werkzeug"
@@ -2233,4 +2250,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "28a35dfb6b11c51f45ce06fb1df2cbb43fb1e9f179292add6ca0a273d6b1d797"
+content-hash = "c48c3b5c7143fd12d29d93497af593d326bdd8be2f7f94a98e05c0a24bf00ad6"
