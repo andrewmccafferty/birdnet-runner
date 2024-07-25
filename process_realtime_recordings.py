@@ -59,10 +59,6 @@ def _create_and_send_detection_snippets(detections, input_file_path):
             )
         )
 
-    if len(detections) > 0:
-        counts = get_species_counts()
-        if len(counts) > 0:
-            send_species_aggregate_report_to_slack(counts)
 
 
 def _analyse_file(

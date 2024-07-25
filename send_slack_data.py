@@ -32,6 +32,7 @@ def send_bird_audio_file_to_slack(
         initial_comment=f"🐦 {species} detected at {detection_time} 🐦",
     )
 
+
 def send_species_aggregate_report_to_slack(reports: list[SightingReport]):
     if NO_SLACK_SEND:
         print(f"Slack notifications off, not sending species report")
@@ -41,10 +42,19 @@ def send_species_aggregate_report_to_slack(reports: list[SightingReport]):
     table.field_names = ["Species", "Last heard", "Count Today"]
     table.add_rows([[report.species_name, report.last_hearing, report.today_count] for report in reports])
 
-    client.chat_postMessage(
+    message_response = client.chat_postMessage(
         channel=SPECIES_COUNTS_SLACK_CHANNEL_ID,
         text=f"```{table}```"
     )
+    for report in reports:
+        print(f"Uploading file {report.last_hearing_filename}")
+        client.files_upload_v2(
+            channel=SPECIES_COUNTS_SLACK_CHANNEL_ID,
+            thread_ts=message_response["ts"],
+            title=os.path.basename(report.last_hearing_filename),
+            file=report.last_hearing_filename,
+            initial_comment=f"🐦 {report.species_name} last detected at {report.last_hearing} 🐦",
+        )
 
 if __name__ == '__main__':
     send_species_aggregate_report_to_slack([
@@ -52,12 +62,12 @@ if __name__ == '__main__':
             species_name="Blackbird",
             last_hearing=datetime.datetime.utcnow(),
             today_count=5,
-            last_hearing_filename="Blah"
+            last_hearing_filename="/Users/andrewmccafferty/Documents/personal/birds/nocmig/realtime_results/results/final_2024-07-21T11-46-00_EurasianMagpie_3.mp3"
         ),
         SightingReport(
             species_name="Bluethroat (just kidding)",
             last_hearing=datetime.datetime.utcnow(),
             today_count=5,
-            last_hearing_filename="Blah"
+            last_hearing_filename="/Users/andrewmccafferty/Documents/personal/birds/nocmig/realtime_results/results/final_2024-07-21T11-45-00_EuropeanGoldfinch_27.mp3"
         )
     ])
