@@ -25,15 +25,11 @@ def _create_audio_segment(input_file, output_file, start_time, end_time):
         raise e
 
 def extract_date_from_filename(file_path):
-    # Define the regex pattern to match the ISO timestamp in the file name
-    pattern = r'(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2})'
+    match = re.search(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})', file_path)
 
-    # Search for the pattern in the file path
-    match = re.search(pattern, file_path)
-
-    # If a match is found, return the timestamp with colons instead of hyphens for time parts
     assert match is not None, f"Could not get date from file path {file_path}"
-    return datetime.fromisoformat(match.group(1).replace('-', ':', 2))
+    date_string = match.group(1)
+    return datetime.fromisoformat(date_string)
 
 
 def _create_and_send_detection_snippets(detections, input_file_path):
