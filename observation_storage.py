@@ -2,12 +2,13 @@ import datetime
 
 import psycopg2
 
-from config import SIGHTINGS_DB_NAME, SIGHTINGS_DB_USER, SIGHTINGS_DB_PASSWORD
+from config import SIGHTINGS_DB_NAME, SIGHTINGS_DB_USER, SIGHTINGS_DB_PASSWORD, SIGHTINGS_DB_HOST
 from models import BirdObservation, SightingReport
 
 
 def get_db_connection():
-    return psycopg2.connect(f"dbname={SIGHTINGS_DB_NAME} "
+    return psycopg2.connect(f"host={SIGHTINGS_DB_HOST} "
+        f"dbname={SIGHTINGS_DB_NAME} "
                             f"user={SIGHTINGS_DB_USER} "
                             f"password={SIGHTINGS_DB_PASSWORD}")
 
