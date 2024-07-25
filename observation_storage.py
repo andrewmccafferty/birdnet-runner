@@ -83,9 +83,9 @@ def get_species_counts() -> list[SightingReport]:
                               "GROUP BY s.common_species_name ORDER by s.common_species_name")
         results = cur.fetchall()
         reports = [SightingReport(
-            species_name=row['common_species_name'],
-            last_hearing=row['last_hearing'],
-            today_count=row['today_count']
+            species_name=row[0],
+            last_hearing=row[1],
+            today_count=row[2]
         ) for row in results]
         return reports
     except Exception as exc:
@@ -101,7 +101,9 @@ if __name__ == '__main__':
     store_observation(BirdObservation(
         common_species_name="Dunnock",
         scientific_name="Prunella modularis",
-        time=datetime.datetime.fromisoformat("2024-07-22 16:23:52.691037"),
+        time=datetime.datetime.fromisoformat("2024-07-25 09:20:52.691037"),
         recording_filename="Some_filename.mp3",
         confidence=0.60
     ))
+    counts = get_species_counts()
+    print(counts)
