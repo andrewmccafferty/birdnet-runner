@@ -19,4 +19,3 @@ class SightingReport(BaseModel):
     species_name: str
     last_hearing: datetime.datetime
     last_hearing_filename: str
-    today_count: int

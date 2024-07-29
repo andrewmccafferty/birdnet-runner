@@ -92,14 +92,15 @@ def get_species_counts() -> list[SightingReport]:
         SELECT 
             s.common_species_name,
             ls.last_hearing,
-            sg.recording_filename,
-            count(s.common_species_name) OVER (PARTITION BY s.common_species_name) as today_count
+            max(sg.recording_filename)
         FROM 
             LastSighting ls
+        JOIN
+            species s ON s.common_species_name = ls.common_species_name 
         JOIN 
             sighting sg ON sg.time = ls.last_hearing
-        JOIN 
-            species s ON s.id = sg.species_id 
+            AND sg.species_id = s.id 
+        GROUP BY s.common_species_name, ls.last_hearing
         ORDER BY 
             s.common_species_name;
         """
@@ -109,8 +110,7 @@ def get_species_counts() -> list[SightingReport]:
         reports = [SightingReport(
             species_name=row[0],
             last_hearing=row[1],
-            last_hearing_filename=row[2],
-            today_count=row[3]
+            last_hearing_filename=row[2]
         ) for row in results]
         return reports
     except Exception as exc:
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     store_observation(BirdObservation(
         common_species_name="Dunnock",
         scientific_name="Prunella modularis",
-        time=datetime.datetime.fromisoformat("2024-07-25 09:20:52.691037"),
+        time=datetime.datetime.fromisoformat("2024-07-29 09:20:52.691037"),
         recording_filename="Some_filename.mp3",
         confidence=0.60
     ))
