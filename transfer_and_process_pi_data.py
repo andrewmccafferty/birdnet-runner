@@ -5,9 +5,8 @@ import time
 
 from config import SCAN_RECORDINGS_FOLDER
 from copy_data import transfer_and_cleanup_files
-from observation_storage import get_species_counts
 from process_realtime_recordings import process_recordings_in_scan_folder
-from send_notifications import send_species_aggregate_report_to_slack
+
 
 LOCAL_IDENTITY_FILE = os.environ["LOCAL_IDENTITY_FILE"]
 REMOTE_USER = os.environ["REMOTE_USER"]
