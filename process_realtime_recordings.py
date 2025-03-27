@@ -9,7 +9,7 @@ from birdnetlib.analyzer import Analyzer
 from config import RESULTS_FOLDER, SCAN_RECORDINGS_FOLDER
 from models import BirdObservation
 from observation_storage import store_observation, get_species_counts
-from send_slack_data import send_bird_audio_file_to_slack, send_species_aggregate_report_to_slack
+from send_notifications import send_bird_audio_file_to_slack, send_species_aggregate_report_to_slack
 
 
 def _create_audio_segment(input_file, output_file, start_time, end_time):
@@ -43,7 +43,7 @@ def _create_and_send_detection_snippets(detections, input_file_path):
         full_output_file_path = f"{RESULTS_FOLDER}/{output_file_name}"
         _create_audio_segment(input_file_path, full_output_file_path, start_time, end_time)
         detection_date = extract_date_from_filename(full_output_file_path)
-        send_bird_audio_file_to_slack(
+        send_bird_audio_file_to_bluesky(
             detection_data=detection,
             file_path=full_output_file_path,
             detection_time=detection_date
