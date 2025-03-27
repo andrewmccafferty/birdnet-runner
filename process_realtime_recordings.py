@@ -9,6 +9,7 @@ from birdnetlib.analyzer import Analyzer
 from config import RESULTS_FOLDER
 from models import BirdObservation
 from observation_storage import store_observation
+from send_notifications import send_bird_audio_file_to_bluesky
 
 
 def _create_audio_segment(input_file, output_file, start_time, end_time):
