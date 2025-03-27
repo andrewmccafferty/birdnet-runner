@@ -5,24 +5,14 @@ import time
 
 from config import SCAN_RECORDINGS_FOLDER
 from copy_data import transfer_and_cleanup_files
-from observation_storage import get_species_counts
 from process_realtime_recordings import process_recordings_in_scan_folder
-from send_slack_data import send_species_aggregate_report_to_slack
+
 
 LOCAL_IDENTITY_FILE = os.environ["LOCAL_IDENTITY_FILE"]
 REMOTE_USER = os.environ["REMOTE_USER"]
 REMOTE_HOST = os.environ["REMOTE_HOST"]
 REMOTE_DIRECTORY = os.environ["REMOTE_DIRECTORY"]
 LOCAL_DIRECTORY = os.environ["LOCAL_DIRECTORY"]
-
-
-def run_species_summary_report():
-    try:
-        counts = get_species_counts()
-        if len(counts) > 0:
-            send_species_aggregate_report_to_slack(counts)
-    except Exception as exception:
-        print(f"Got error {exception} while sending species count report")
 
 def run_process():
     try:
@@ -38,10 +28,8 @@ def run_process():
 
 
 run_process()
-run_species_summary_report()
 print("Starting timer to get data from Pi every 30 seconds")
 schedule.every(30).seconds.do(run_process)
-schedule.every(15).minutes.do(run_species_summary_report)
 
 # Keep the script running
 while True:
