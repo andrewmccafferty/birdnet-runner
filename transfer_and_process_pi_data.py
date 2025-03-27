@@ -38,10 +38,10 @@ def run_process():
 
 
 run_process()
-run_species_summary_report()
+# run_species_summary_report()
 print("Starting timer to get data from Pi every 30 seconds")
 schedule.every(30).seconds.do(run_process)
-schedule.every(15).minutes.do(run_species_summary_report)
+# schedule.every(15).minutes.do(run_species_summary_report)
 
 # Keep the script running
 while True:
